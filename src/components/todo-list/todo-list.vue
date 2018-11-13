@@ -1,10 +1,13 @@
 <template>
     <div class='todo-list'>
         <h1 class='header'>To Do List</h1>
-        <button class='editButton' v-on:click="clickEdit()">Edit</button>
-        <ul>
+        <div class='toolbar'>
+          <input type='text' id='newTodoText' v-model='newTodoText' maxlength='20' placeholder='Please input title' />
+          <button id='newTodoBtn' v-on:click="clickAdd()">Add</button>
+        </div>
+        <ul class='todos' v-show='items.length > 0'>
             <li v-for='item in items' :key='item.id'>
-                <toDoListItem v-bind:item='item' v-bind:isEditMode='flag.isEditMode' />
+              <span class='item'>{{ item }}</span>
             </li>
         </ul>
     </div>
@@ -12,13 +15,9 @@
 
 <script lang='ts'>
 import Vue from "vue";
-import toDoListItem from "./todo-list-item.vue";
 
 export default Vue.extend({
   name: "todo-list",
-  components: {
-    toDoListItem
-  },
   props: {
     items: {
       type: Array,
@@ -27,14 +26,12 @@ export default Vue.extend({
   },
   data() {
     return {
-      flag: {
-        isEditMode: false
-      }
-    };
+      newTodoText: ''
+    }
   },
   methods: {
-    clickEdit() {
-      this.flag.isEditMode = !this.flag.isEditMode;
+    clickAdd() {
+      this.items.push(this.newTodoText);
     }
   }
 });
@@ -42,8 +39,13 @@ export default Vue.extend({
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped lang='less'>
+.common-style() {
+  border: 1px solid white;
+  padding: 5px 10px;
+  color: white;
+  background-color: transparent;
+}
 .todo-list {
-  position: relative;
   ul {
     list-style-type: none;
     padding: 0;
@@ -52,20 +54,33 @@ export default Vue.extend({
     text-align: center;
     color: white;
   }
-  .editButton {
-    position: absolute;
-    right: 14px;
-    top: 9px;
-    border: 1px solid white;
-    border-radius: 16px;
+  .toolbar {
     padding: 5px 10px;
-    color: white;
-    background-color: transparent;
-    transition: background-color;
-    transition-duration: 300;
-    &:hover {
-      background-color: #e6e6e6;
-      color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    #newTodoText {
+      .common-style;
+      font-size: 24px;
+      border-radius: 24px;
+      max-width: 200px;
+    }
+    #newTodoBtn {
+      .common-style;
+      border-radius: 16px;
+      transition: background-color 0.3s, color 0.3s;
+      -webkit-transition: background-color 0.3s, color 0.3s;
+      &:hover {
+        background-color: #e6e6e6;
+        color: black;
+      }
+    }
+  }
+  .todos {
+    padding: 5px 15px;
+    .item {
+      color: #e4e4e4;
     }
   }
 }

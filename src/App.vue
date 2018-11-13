@@ -21,24 +21,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      toDoList: [
-        {
-          title: "Test A",
-          details: [
-            { key: "事項1", value: "測試功能" },
-            { key: "事項2", value: "Debug" },
-            { key: "自訂事項", value: "Wryyyyyy" }
-          ]
-        },
-        {
-          title: "Test B",
-          details: [
-            { key: "B-1", value: "I am test 4" },
-            { key: "B-1", value: "I am test 4" },
-            { key: "B-1", value: "I am test 4" }
-          ]
-        }
-      ]
+      toDoList: ["Test A", "Test B"]
     };
   }
 });
