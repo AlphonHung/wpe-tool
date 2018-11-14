@@ -1,28 +1,20 @@
 <template>
   <div id='app'>
     <!-- <img alt='Vue logo' src='./assets/logo.png'> -->
-    <!-- <HelloWorld msg=''/> -->
-    <div class="block">
-      <toDoList v-bind:items="toDoList" />
+    <div class="block" style="height: 50%; width: 400px;">
+      <toDoList />
     </div>
   </div>
 </template>
 
 <script lang='ts'>
 import Vue from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
-import toDoList from "./components/todo-list/todo-list.vue";
+import toDoList from "./components/todo-list.vue";
 
 export default Vue.extend({
   name: "app",
   components: {
-    HelloWorld,
     toDoList
-  },
-  data() {
-    return {
-      toDoList: ["Test A", "Test B"]
-    };
   }
 });
 </script>
@@ -90,12 +82,11 @@ section {
   color: #2c3e50;
   background-image: url("./assets/background/background.jpg");
   .block {
-    height: 100%;
-    width: 300px;
-    margin: 10px 5px;
+    margin: 10px;
     display: inline-block;
     overflow-y: scroll;
     background-color: rgba(64, 64, 64, 0.6);
+    border-radius: 5px;
   }
 }
 </style>
