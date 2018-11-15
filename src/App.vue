@@ -1,20 +1,29 @@
 <template>
   <div id='app'>
-    <!-- <img alt='Vue logo' src='./assets/logo.png'> -->
-    <div class="block" style="height: 50%; width: 400px;">
+    <div class="block" style="width: 400px;">
+      <clock />
+    </div>
+    <div class="block" style="width: 400px;">
       <toDoList />
     </div>
+    <!-- <div class="block">
+      <imageSelector />
+    </div> -->
   </div>
 </template>
 
 <script lang='ts'>
 import Vue from "vue";
 import toDoList from "./components/todo-list.vue";
+import clock from './components/clock.vue';
+import imageSelector from "./components/image-selector.vue";
 
 export default Vue.extend({
   name: "app",
   components: {
-    toDoList
+    toDoList,
+    clock,
+    imageSelector
   }
 });
 </script>
@@ -67,26 +76,24 @@ section {
   border: 0;
   outline: 0;
 }
-
 #app {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow-y: auto;
+  display: inline-block;
+  background-image: url("./assets/background/1.png");
+  background-color: black;
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  // text-align: center;
-  color: #2c3e50;
-  background-image: url("./assets/background/background.jpg");
+  color: red;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   .block {
     margin: 10px;
-    display: inline-block;
-    overflow-y: scroll;
-    background-color: rgba(64, 64, 64, 0.6);
-    border-radius: 5px;
   }
 }
 </style>

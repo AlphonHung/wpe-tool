@@ -1,8 +1,10 @@
 <template>
     <div class='todo-list'>
-        <h1 class='header'>To Do List</h1>
+      <div class="theme-line-top"></div>
+        <p class='header'>Missions</p>
         <div class='toolbar'>
-          <input type='text' id='newTodoInput' v-model='newTodoInput' maxlength='18' placeholder='Please input title' />
+          <input type='text' id='newTodoInput' v-model='newTodoInput' maxlength='100' placeholder='New Mission...' />
+          <button id='refreshBtn' class="button" v-on:click="clickRefresh()">Refresh</button>
           <button id='newTodoBtn' class="button" v-on:click="clickAdd()">Add</button>
         </div>
         <ul class='todos' v-show='items.length > 0'>
@@ -19,26 +21,30 @@
 
 <script lang='ts'>
 import Vue from "vue";
-import storage from "../helpers/storage";
+import storage from "../helpers/storage.helper";
 
 export default Vue.extend({
   name: "todo-list",
   data() {
     return {
-      items: JSON.parse(storage.fetch(storage.KEYS.LOCAL_STORAGE) || "[]") as Array<todoItem>,
+      items: JSON.parse(storage.fetch(storage.KEYS.TODO_LIST) || "[]") as Array<
+        todoItem
+      >,
       newTodoInput: "" // new todo的暫存字串
     };
   },
   computed: {
     /** 已排序的items */
     getRankedItems(): Array<todoItem> {
-      return this.items.filter(x => x.isFinished).concat(this.items.filter(x => !x.isFinished));
+      return this.items
+        .filter(x => x.isFinished)
+        .concat(this.items.filter(x => !x.isFinished));
     }
   },
   watch: {
     items: {
       handler: function(data) {
-        storage.save(storage.KEYS.LOCAL_STORAGE, JSON.stringify(data));
+        storage.save(storage.KEYS.TODO_LIST, JSON.stringify(data));
       },
       deep: true // deep copy
     }
@@ -53,7 +59,10 @@ export default Vue.extend({
         text: this.newTodoInput,
         isFinished: false
       });
-      this.newTodoInput = '';
+      this.newTodoInput = "";
+    },
+    clickRefresh() {
+      this.items = this.items.filter(x => !x.isFinished);
     },
     /** todo標示已完成 */
     clickFinish(id: string) {
@@ -67,7 +76,7 @@ export default Vue.extend({
     /** todo item判斷是否掛上class */
     getFinishClass(item: todoItem) {
       return {
-        "finished": item.isFinished
+        finished: item.isFinished
       };
     }
   }
@@ -99,13 +108,18 @@ interface todoItem {
   }
 }
 .todo-list {
+  position: relative;
+  background-color: rgba(64, 64, 64, 0.6);
   ul {
     list-style-type: none;
     padding: 0;
   }
   .header {
     text-align: center;
-    color: white;
+    color: #CBE6FF;
+    text-shadow: 0em 0em 0.3em #1870C7, 0em 0em 0.1em #CBE6FF;
+    margin-top: 8px;
+    font-size: 34px;
   }
   .toolbar {
     padding: 5px 10px;
@@ -115,21 +129,25 @@ interface todoItem {
     align-items: center;
     #newTodoInput {
       .common-style;
-      font-size: 24px;
+      font-size: 12px;
       border-radius: 24px;
-      max-width: 200px;
+      width: 100%;
     }
   }
   .todos {
     padding: 5px 10px;
+    overflow-y: scroll;
+    height: 284px;
     li {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      height: 34px;
+      min-height: 34px;
       .todo-text {
-        color: white;
+        color: #CBE6FF;
+        word-break: break-all;
+        font-size: 12px;
         &.finished {
           color: #a6a6a6;
         }
@@ -142,5 +160,12 @@ interface todoItem {
 }
 .hidden {
   display: none;
+}
+.theme-line-top {
+  position: absolute;
+  top: 2px;
+  width: 100%;
+  height: 2px;
+  background-color: #004489;
 }
 </style>

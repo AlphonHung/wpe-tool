@@ -1,6 +1,6 @@
 class Storage {
     KEYS = {
-        LOCAL_STORAGE: 'local-storage'
+        TODO_LIST: 'todo_list',
     };
     constructor() {}
 
