@@ -1,29 +1,33 @@
 <template>
   <div id='app'>
-    <div class="block" style="width: 400px;">
-      <clock />
+    <div class='left-blocks'>
+      <div class="block">
+        <clock />
+      </div>
+      <div class="block">
+        <toDoList />
+      </div>
     </div>
-    <div class="block" style="width: 400px;">
-      <toDoList />
+    <div class='right-blocks'>
+      <div class="block">
+        <imageSlide />
+      </div>
     </div>
-    <!-- <div class="block">
-      <imageSelector />
-    </div> -->
   </div>
 </template>
 
 <script lang='ts'>
 import Vue from "vue";
 import toDoList from "./components/todo-list.vue";
-import clock from './components/clock.vue';
-import imageSelector from "./components/image-selector.vue";
+import clock from "./components/clock.vue";
+import imageSlide from "./components/image-slide.vue";
 
 export default Vue.extend({
   name: "app",
   components: {
     toDoList,
     clock,
-    imageSelector
+    imageSlide
   }
 });
 </script>
@@ -77,23 +81,38 @@ section {
   outline: 0;
 }
 #app {
-  display: inline-block;
-  background-image: url("./assets/background/1.png");
+  // display: flex;
+  background-image: url("./assets/background/main-background.png");
   background-color: black;
   background-size: cover;
   background-repeat: no-repeat;
-  overflow: hidden;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: red;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  .block {
-    margin: 10px;
+  .left-blocks {
+    float: left;
+    height: 100%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 440px;
+    .block {
+      margin: 10px;
+      width: 400px;
+    }
+  }
+  .right-blocks {
+    margin-left: 440px;
+    .block {
+      margin: 10px;
+    }
   }
 }
 </style>

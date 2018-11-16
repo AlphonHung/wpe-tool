@@ -110,15 +110,20 @@ interface todoItem {
 .todo-list {
   position: relative;
   background-color: rgba(64, 64, 64, 0.6);
+  transition: background-color 0.3s, color 0.3s;
+  -webkit-transition: background-color 0.3s, color 0.3s;
   ul {
     list-style-type: none;
     padding: 0;
   }
+  &:hover {
+    background-color: transparent;
+  }
   .header {
     text-align: center;
-    color: #CBE6FF;
-    text-shadow: 0em 0em 0.3em #1870C7, 0em 0em 0.1em #CBE6FF;
-    margin-top: 8px;
+    color: #cbe6ff;
+    text-shadow: 0em 0em 0.3em #1870c7, 0em 0em 0.1em #cbe6ff;
+    padding-top: 8px;
     font-size: 34px;
   }
   .toolbar {
@@ -136,8 +141,6 @@ interface todoItem {
   }
   .todos {
     padding: 5px 10px;
-    overflow-y: scroll;
-    height: 284px;
     li {
       display: flex;
       flex-direction: row;
@@ -145,9 +148,9 @@ interface todoItem {
       align-items: center;
       min-height: 34px;
       .todo-text {
-        color: #CBE6FF;
+        color: #cbe6ff;
         word-break: break-all;
-        font-size: 12px;
+        font-size: 16px;
         &.finished {
           color: #a6a6a6;
         }
