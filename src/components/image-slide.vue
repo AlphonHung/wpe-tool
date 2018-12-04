@@ -41,6 +41,7 @@ export default Vue.extend({
   methods: {
     /** 每隔一段時間變換圖片index, 依照isRandom有不同的取index方式 */
     setSlideDisplay() {
+      if (this.images.length == 0) return;
       let tmpIndex = this.currentIndex;
       // 隨機模式時亂數決定index
       if (this.isRandom) {
@@ -53,7 +54,6 @@ export default Vue.extend({
 
       this.currentIndex = tmpIndex;
       this.displayImage = this.images[this.currentIndex].src;
-      console.log(`images: ${this.images.length}, index: ${this.currentIndex}`);
     },
     /** 改變isRandom */
     changeRandom() {
@@ -65,13 +65,9 @@ export default Vue.extend({
     },
     /** 選完圖片後的流程，紀錄並改變展示的圖片 */
     imageSelected(event: any) {
-      this.slideInterval = 0;
       this.images = [];
       const files = event.target.files; //取得File物件
       [].forEach.call(files, this.fileReader);
-      if (this.slideInterval == 0) {
-        this.slideInterval = setInterval(this.setSlideDisplay, 1000 * 30); // start interval after seconds
-      }
     },
     fileReader(file: any) {
       const reader = new FileReader();
@@ -82,31 +78,13 @@ export default Vue.extend({
           src: event.target.result // base64從onloadend event而來
         };
         this.images.push(image);
-        if (this.images.length == 1) this.setSlideDisplay(); // 選圖後不等待interval，顯示圖片
-      };
-      reader.readAsDataURL(file);
-    },
-    resizeBase64Image(file: any) {
-      const reader = new FileReader();
-      reader.onloadend = e => {
-        const img = new Image();
-        img.src = reader.result;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-          if (context == null) return;
-          const canvasWidth = img.naturalWidth;
-          const canvasHeight = img.naturalHeight;
-          console.log(`nw: ${canvasWidth}, ch: ${canvasHeight}`);
-          context.drawImage(img, 0, 0, canvasWidth, canvasHeight);
-          this.images.push({
-            title: file.name,
-            src: canvas.toDataURL("image/jpeg")
-          });
-        };
+        if (this.images.length == 1) this.setSlideDisplay(); // 選圖後執行完第一張圖，不等待interval直接顯示圖片
       };
       reader.readAsDataURL(file);
     }
+  },
+  created() {
+    this.slideInterval = setInterval(this.setSlideDisplay, 1000 * 30); // start interval
   }
 });
 interface imageItem {
