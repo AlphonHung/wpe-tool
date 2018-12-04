@@ -9,7 +9,7 @@
         </div>
         <ul class='todos' v-show='items.length > 0'>
             <li v-for='item in getRankedItems' :key='item.id'>
-              <span class='todo-text' v-bind:class="getFinishClass(item)">{{ item.text }}</span>
+              <span class='todo-text' v-bind:class="{ finished: item.isFinished }">{{ item.text }}</span>
               <div class="todo-btns">
                 <button id='finishTodoBtn' class="button" v-on:click="clickFinish(item.id)">Fin</button>
                 <button id='deleteTodoBtn' class="button" v-on:click="clickDelete(item.id)">Del</button>

@@ -1,6 +1,7 @@
 class Storage {
     KEYS = {
         TODO_LIST: 'todo_list',
+        IMAGE_SLIDE: 'image_slide'
     };
     constructor() {}
 
