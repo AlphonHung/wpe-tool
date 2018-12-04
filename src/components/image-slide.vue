@@ -1,11 +1,17 @@
 <template>
   <div class="image-slide">
-    <div
-      class="display-zone"
-      v-bind:style="displayImage"
-      @click="changeRandom"
-      @dblclick="triggerImageSelector"
-    ></div>
+    <div class="display-zone" @dblclick="triggerImageSelector">
+      <div class="empty-zone" v-if="images.length == 0">
+        <img class="empty-icon" src="../assets/icon/image_upload.png">
+        <p class="empty-icon-text">Please double click here to select your images.</p>
+      </div>
+      <img
+        class="display-image"
+        v-if="images.length > 0"
+        v-bind:src="displayImage"
+        @click="changeRandom"
+      >
+    </div>
     <div class="toolbar">
       <input
         ref="imageSelector"
@@ -20,44 +26,34 @@
 
 <script lang='ts'>
 import Vue from "vue";
-import storage from "../helpers/storage.helper";
 export default Vue.extend({
   name: "image-slide",
   data() {
     return {
-      images: [] as any[], // 匯入的圖片
-      imagePaths: ["eu01.jpg", "eu02.jpg", "eu03.jpg"], // 預設圖片路徑
+      images: [] as imageItem[], // 匯入的圖片
+      // imagePaths: ["eu01.jpg", "eu02.jpg", "eu03.jpg"], // 預設圖片路徑
       currentIndex: 0,
       isRandom: false,
-      displayImage: {
-        backgroundImage: ""
-      }
+      displayImage: require("../assets/icon/image_upload.png"),
+      slideInterval: 0
     };
   },
   methods: {
     /** 每隔一段時間變換圖片index, 依照isRandom有不同的取index方式 */
     setSlideDisplay() {
       let tmpIndex = this.currentIndex;
-      const tmpImages = this.images.length > 0 ? this.images : this.imagePaths;
-
       // 隨機模式時亂數決定index
       if (this.isRandom) {
-        tmpIndex = Math.floor(Math.random() * tmpImages.length);
+        tmpIndex = Math.floor(Math.random() * this.images.length);
       }
       // 若index相同時(隨機決定到相同數字或非隨機模式下)，index+1
       if (tmpIndex == this.currentIndex) {
-        tmpIndex = (tmpIndex + 1) % tmpImages.length;
+        tmpIndex = (tmpIndex + 1) % this.images.length;
       }
 
       this.currentIndex = tmpIndex;
-      const url =
-        this.images.length > 0
-          ? tmpImages[this.currentIndex].src
-          : require(`../assets/background/${tmpImages[this.currentIndex]}`);
-      this.displayImage.backgroundImage = `url('${url}')`;
-      setTimeout(() => {
-        this.setSlideDisplay();
-      }, 1000 * 5);
+      this.displayImage = this.images[this.currentIndex].src;
+      console.log(`images: ${this.images.length}, index: ${this.currentIndex}`);
     },
     /** 改變isRandom */
     changeRandom() {
@@ -69,44 +65,48 @@ export default Vue.extend({
     },
     /** 選完圖片後的流程，紀錄並改變展示的圖片 */
     imageSelected(event: any) {
+      this.slideInterval = 0;
       this.images = [];
       const files = event.target.files; //取得File物件
       [].forEach.call(files, this.fileReader);
-
-      setTimeout(() => {
-        // download by base64
-        // this.saveImage(this.images[0]);
-        // storage.save(storage.KEYS.IMAGE_SLIDE, JSON.stringify(this.images));
-        // const test = storage.fetch(storage.KEYS.IMAGE_SLIDE);
-        // console.log(test);
-      }, 3000);
+      if (this.slideInterval == 0) {
+        this.slideInterval = setInterval(this.setSlideDisplay, 1000 * 30); // start interval after seconds
+      }
     },
     fileReader(file: any) {
-      console.log(file);
       const reader = new FileReader();
       reader.onloadend = (event: any) => {
+        // 放入容器
         const image: imageItem = {
           title: file.name, // 檔名從參數來
           src: event.target.result // base64從onloadend event而來
         };
         this.images.push(image);
-        this.saveImage(image);
+        if (this.images.length == 1) this.setSlideDisplay(); // 選圖後不等待interval，顯示圖片
       };
       reader.readAsDataURL(file);
     },
-    saveImage(image: imageItem) {
-      const link = document.createElement("a");
-      link.setAttribute("href", image.src);
-      link.setAttribute("download", image.title);
-      link.click();
+    resizeBase64Image(file: any) {
+      const reader = new FileReader();
+      reader.onloadend = e => {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (context == null) return;
+          const canvasWidth = img.naturalWidth;
+          const canvasHeight = img.naturalHeight;
+          console.log(`nw: ${canvasWidth}, ch: ${canvasHeight}`);
+          context.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+          this.images.push({
+            title: file.name,
+            src: canvas.toDataURL("image/jpeg")
+          });
+        };
+      };
+      reader.readAsDataURL(file);
     }
-  },
-  created() {
-    // this.images = JSON.parse(
-    //   storage.fetch(storage.KEYS.IMAGE_SLIDE) || "[]"
-    // ) as Array<any>;
-    // console.log(this.images);
-    this.setSlideDisplay();
   }
 });
 interface imageItem {
@@ -118,24 +118,33 @@ interface imageItem {
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped lang='less'>
 .image-slide {
-  // background-color: white;
   .display-zone {
-    filter: saturate(2);
-    -webkit-filter: saturate(2); // 飽和濾鏡
+    min-height: 300px;
     position: relative;
-    // margin: 10px;
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
-    transition: background-image 1s ease-in-out; // 換圖動畫漸變
-    -webkit-transition: background-image 1s ease-in-out;
     padding-bottom: 56.25%; // 維持16:9
-    opacity: 0.75; // 透明度
-    // border: 16px solid rgba(0, 0, 0, 0.1);
-  }
-  #imageInputs {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .empty-zone {
+      text-align: center;
+      .empty-icon {
+        max-width: 100px;
+        max-height: 100px;
+      }
+      .empty-icon-text {
+        color: white;
+      }
+    }
+    .display-image {
+      width: 100%;
+      height: 100%;
+      filter: saturate(2);
+      -webkit-filter: saturate(2); // 飽和濾鏡
+      transition: background-image 1s ease-in-out; // 換圖動畫漸變
+      -webkit-transition: background-image 1s ease-in-out;
+      opacity: 0.75; // 透明度
+    }
   }
 }
 </style>
