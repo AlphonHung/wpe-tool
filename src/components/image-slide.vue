@@ -99,7 +99,6 @@ interface imageItem {
   .display-zone {
     min-height: 300px;
     position: relative;
-    padding-bottom: 56.25%; // 維持16:9
     display: flex;
     flex-direction: column;
     justify-content: center;
